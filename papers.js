@@ -17,7 +17,7 @@ process.on("unhandledRejection", e => {
             let res = await fetch('https://sci-hub.tw/' + data.dois[i])
             let html = await res.text()
             match = html.match(/iframe.*src\s*=\s*"([^"]+)"/)
-            console.log(match)
+            console.log(match && match[1])
             if (match) {
                 let url = match[1].startsWith('//') ? 'https:' + match[1] : match[1]
                 let res = await fetch(url)

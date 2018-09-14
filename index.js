@@ -12,7 +12,7 @@ var fs = require('fs')
 
     let data = []
 
-    let url = 'http://replication.uni-goettingen.de/wiki/index.php/Category:Replication'
+    let url = 'http://replication.uni-goettingen.de/wiki/index.php/Category:Replication_of_more_than_one_study'
 
     while (url) {
         await page.goto(url)
@@ -46,7 +46,7 @@ var fs = require('fs')
         }
     }
 
-    fs.writeFileSync('titles-labels.json', JSON.stringify(data))
+    fs.writeFileSync('titles-labels-multiple.json', JSON.stringify(data))
 
     await browser.close()
 })()
