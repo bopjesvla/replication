@@ -9,12 +9,12 @@ process.on("unhandledRejection", e => {
 })
 
 ;(async _ => {
-    for (let i in data.data) {
-        let fn = 'papers/' + data.data[i].title + '.pdf'
+    for (let d of data.map(d => d.replication).concat(data)) {
+        let fn = 'papers/' + d.title.replace('/', '_') + '.pdf'
         let match
         if (fs.existsSync(fn)) continue
         try {
-            let res = await fetch('https://sci-hub.tw/' + data.dois[i])
+            let res = await fetch('https://sci-hub.tw/' + d.doi)
             let html = await res.text()
             match = html.match(/iframe.*src\s*=\s*"([^"]+)"/)
             console.log(match && match[1])
