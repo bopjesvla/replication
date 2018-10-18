@@ -16,7 +16,6 @@ def V(w):
         return None
 
 x = KeyedVectors.load_word2vec_format(vectors)
-# x = {'the': [1]}
 
 data = pd.read_json('flat.json', orient='records')
 # data['dois'] = docs['dois']
