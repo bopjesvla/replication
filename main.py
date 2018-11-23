@@ -3,6 +3,7 @@
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+import scipy
 
 import pandas as pd
 import numpy as np
@@ -10,7 +11,7 @@ import re
 from multiprocessing import Pool
 from gensim.models import KeyedVectors
 from sklearn import svm, linear_model, feature_extraction, feature_selection
-from sklearn.metrics import make_scorer, roc_curve, precision_recall_curve, average_precision_score, accuracy_score
+from sklearn.metrics import make_scorer, roc_curve, precision_recall_curve, average_precision_score, accuracy_score, roc_auc_score
 from sklearn.model_selection import cross_validate, RepeatedStratifiedKFold, StratifiedKFold
 
 vectors = '/mnt/sda1/wv/w2v.wiki50d.txt'
@@ -20,7 +21,7 @@ x = KeyedVectors.load_word2vec_format(vectors)
 
 TASK = 'identify'
 TASK = 'predict'
-TASK = 'categorize'
+# TASK = 'categorize'
 
 ## Preprocessing
 
@@ -146,7 +147,7 @@ from tpot import TPOTClassifier
 
 y_true=[]
 y_pred=[]
-for train, test in RepeatedStratifiedKFold(n_splits=20).split(X, y):
+for train, test in StratifiedKFold(n_splits=20).split(X, y):
     model = linear_model.LogisticRegression(class_weight='balanced', C=1.)
     # model = AutoSklearnClassifier(
     #     time_left_for_this_task=360, per_run_time_limit=5,
@@ -161,7 +162,10 @@ for train, test in RepeatedStratifiedKFold(n_splits=20).split(X, y):
     y_true += list(y[test])
     y_pred += list(model.predict_proba(X[test])[:,1])
 score = average_precision_score(y_true, y_pred)
-print(score)
+print('AP', score)
+print('chance', sum(y)/len(y))
+score = roc_auc_score(y_true, y_pred)
+print('AUROC', score)
 
 fpr, tpr, _ = roc_curve(y_true, y_pred)
 plt.figure()
@@ -187,7 +191,5 @@ plt.xlim([0,1])
 plt.ylim([0,1])
 plt.savefig('pr_'+TASK)
 # print(data.groupby('title').filter(lambda x: len(x) > 1)[['title', 'result', 'questioned']].sort_values('title'))
-
-print(len(papers))
 
 # print(papers.iloc[0])
