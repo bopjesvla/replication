@@ -28,11 +28,13 @@ even though all original papers were widely-cited and published in esteemed jour
 
 Most replication efforts, however, are not part of such a collaboration. Because replication studies do not have a single defining characteristic, finding all published replications of a paper can prove to be difficult, be it automatically or manually.
 
-If all replications of a given study could be automatically identified, checking the integrity of a paper's bibliography would become much easier. Another benefit would be that citation databases and academic search engines such as Google Scholar could include the replications of each paper on the result page, increasing their visibility. In this paper, exploratory research is performed to investigate whether any of this is possible. In particular, I look at whether replication studies can be distinguished from replicated studies and whether failed replications can be distinguished from successful replications.
+If all replications of a given study could be automatically identified, checking the integrity of a paper's bibliography would become much easier. Another benefit would be that citation databases and academic search engines such as Google Scholar could include the replications of each paper on the result page, increasing their visibility.
 
-Since replication studies typically cite the papers they replicate, replication searches can be limited to papers that cite the original paper. However, replication studies only account for a fraction of citations. As such, additional filtering is needed. One approach is to only query for documents that contain variants of the words "replication", "reproduction", "reanalysis" and "reinvestigation", but this does not even return half of all replication studies. Another problem with a simple rule-based system is that replication studies also cite papers they do not replicate.
+In this paper, exploratory research is performed to investigate whether any of this is possible. As far as I am aware, no research of this kind has ever been done before. Because of this, I restrict my scope to looking at whether replication studies can be distinguished from replicated studies and whether failed replications can be distinguished from successful replications.
 
-Instead of constructing a rule-based system, a supervised text classification model could be trained to identify replication studies. This, however, requires a labeled dataset. Fortunately, the University of Göttingen's ReplicationWiki [@2017replicationwiki] has a collection of structured data concerning a hundreds of replication attempts spread over as many pages. The initial database was put together by students. According to a disclaimer on the website, the data may thus contain mistakes, but for a random sample of 50 papers all information appeared to be correct.
+Since replication studies typically cite the papers they replicate, replication searches can be limited to papers that cite the original paper. However, replication studies only account for a fraction of the citations of most papers. As such, additional filtering is needed. One approach is to only query for documents that contain variants of the words "replication", "reproduction", "reanalysis" and "reinvestigation", but this does not even return half of all replication studies. Another problem with a simple rule-based system is that replication studies also cite papers they do not replicate.
+
+Instead of constructing a rule-based system, a supervised text classification model could be trained to identify replication studies. This, however, requires a labeled dataset. Fortunately, the University of Göttingen's ReplicationWiki [@2017replicationwiki] has a [collection of structured data concerning a hundreds of replication attempts spread over as many pages](http://replication.uni-goettingen.de/wiki/index.php/Category:Replication). The initial database was put together by students. According to a disclaimer on the website, the data may thus contain mistakes. However, looking at a random sample of 50 papers, all information appears to be correct.
 
 The ReplicationWiki also includes reproductions and reinvestigations in their definition of "replication", presumably because they can be equally interesting to those evaluating the trustworthiness of a study. For the sake of brevity, the same broad definition of "replication" is used throughout this paper.
 
@@ -48,15 +50,23 @@ Fifty-dimensional word vectors trained on Wikipedia 2014 and Gigaword 5 were obt
 
 The model used in all tasks is a regularized logistic regression model (C = 1.0, class weights were balanced using the method devised by @king2001logistic).
 
+[@Ruiter2018]
+
 ## Task 1: Identifying Replications
+
+*In this task, the goal was to identify replication studies in a mixed set of replication studies and replicated studies.*
 
 Replication studies and replicated papers were annotated with positive and negative labels, respectively. For this task, the normalized frequencies of words starting with "replicat", "reproduc", "note", "comment", "reply", "re-" and "reinvestigat" were independently added as features. Additionally, both the average word vectors and the hand-picked features were recomputed for the paper titles rather than the full text, and this second feature matrix was concatenated to the first one. A logistic regression model was trained and tested on a stratified 40-fold split of the data.
 
 ## Task 2: Categorizing Replications
 
+*In this task, the goal was to distinguish failed replication studies from successful replication studies.*
+
 Replication studies were annotated with a label denoting whether the study failed. Partially successful and ambiguous replications were discarded, as were replications where data about the outcome was missing, leaving 150 replications, of which 49 were successful. A logistic regression model was trained and tested on a stratified 20-fold split of the data.
 
 ## Task 3: Predicting Failure to Replicate
+
+*In this task, the goal was to distinguish replicated studies with successful replications from replicated studies with failed replications.*
 
 All original papers were annotated with a label denoting whether its replications failed. Papers with mixed or partially successful replications were discarded, as were original papers where all replication results were missing, leaving 178 original papers, of which 68 were successfully replicated. A logistic regression model was trained and tested on a stratified 20-fold split of the data.
 
